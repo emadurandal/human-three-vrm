@@ -7,6 +7,19 @@ let leanBody = 0; // face angle is relative to body
 let posLeftWrist; // hand model needs to know which body hand is closest
 let posRightWrist; // hand model needs to know which body hand is closest
 
+const rightUpperArmAngleBuffer = [];
+const leftUpperArmAngleBuffer = [];
+const rightLowerArmAngleBuffer = [];
+const leftLowerArmAngleBuffer = [];
+
+function averageAngle(buffer: number[], angle) {
+  buffer.push(angle);
+  if (buffer.length > 10) buffer.shift();
+  let sum = 0;
+  for (const a of buffer) sum += a;
+  return sum / buffer.length;
+}
+
 const angle = (pt1, pt2) => {
   if (!pt1 || !pt2 || pt1.length < 2 || pt2.length < 2) return 0;
   const radians = Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0]);
@@ -29,26 +42,30 @@ async function updateBody(vrm: VRM, res: Result) {
 
   // arms
   const posRightElbow = part('rightElbow');
-  if (posRightShoulder && posRightElbow) (vrm.humanoid.getNormalizedBone('rightUpperArm') as VRMHumanBone).node.rotation.y = angle(posRightElbow, posRightShoulder);
+  if (posRightShoulder && posRightElbow) {
+    const angleRightUpperArm = angle(posRightElbow, posRightShoulder);
+    (vrm.humanoid.getNormalizedBone('rightUpperArm') as VRMHumanBone).node.rotation.y = averageAngle(rightUpperArmAngleBuffer, angleRightUpperArm);
+  }
   (vrm.humanoid.getNormalizedBone('rightUpperArm') as VRMHumanBone).node.rotation.x = 3.14 / 2 * 1.3;
   const posLeftElbow = part('leftElbow');
-  if (posLeftShoulder && posLeftElbow) (vrm.humanoid.getNormalizedBone('leftUpperArm') as VRMHumanBone).node.rotation.y = angle(posLeftShoulder, posLeftElbow);
+  if (posLeftShoulder && posLeftElbow) {
+    const angleLeftUpperArm = angle(posLeftShoulder, posLeftElbow);
+    (vrm.humanoid.getNormalizedBone('leftUpperArm') as VRMHumanBone).node.rotation.y = averageAngle(leftUpperArmAngleBuffer, angleLeftUpperArm);
+  }
   (vrm.humanoid.getNormalizedBone('leftUpperArm') as VRMHumanBone).node.rotation.x = 3.14 / 2 * 1.3;
 
   // elbows
   posRightWrist = part('rightWrist');
   if (posRightWrist && posRightElbow && posRightShoulder) {
     const angleRightLowerArm = angle(posRightWrist, posRightElbow) - angle(posRightElbow, posRightShoulder);
-    if (Math.abs(angleRightLowerArm - (vrm.humanoid.getNormalizedBone('rightLowerArm') as VRMHumanBone).node.rotation.y) < 1.5) {
-      (vrm.humanoid.getNormalizedBone('rightLowerArm') as VRMHumanBone).node.rotation.y = angleRightLowerArm;
-    }
+    (vrm.humanoid.getNormalizedBone('rightLowerArm') as VRMHumanBone).node.rotation.y = averageAngle(rightLowerArmAngleBuffer, angleRightLowerArm);
   }
 
   posLeftWrist = part('leftWrist');
   if (posLeftWrist && posLeftElbow && posLeftShoulder) {
     const angleLeftLowerArm = angle(posLeftElbow, posLeftWrist) - angle(posLeftShoulder, posLeftElbow);
     if (Math.abs(angleLeftLowerArm - (vrm.humanoid.getNormalizedBone('leftLowerArm') as VRMHumanBone).node.rotation.y) < 1.5) {
-      (vrm.humanoid.getNormalizedBone('leftLowerArm') as VRMHumanBone).node.rotation.y = angleLeftLowerArm;
+      (vrm.humanoid.getNormalizedBone('leftLowerArm') as VRMHumanBone).node.rotation.y = averageAngle(leftLowerArmAngleBuffer, angleLeftLowerArm);
     }
   }
 
