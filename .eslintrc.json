@@ -77,6 +77,7 @@
     "promise/always-return": "off",
     "promise/catch-or-return": "off",
     "promise/no-nesting": "off",
-    "radix": "off"
+    "radix": "off",
+    "no-unused-vars": "off"
   }
 }

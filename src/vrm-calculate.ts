@@ -30,22 +30,35 @@ async function updateBody(vrm: VRM, res: Result) {
   // arms
   const posRightElbow = part('rightElbow');
   if (posRightShoulder && posRightElbow) (vrm.humanoid.getNormalizedBone('rightUpperArm') as VRMHumanBone).node.rotation.y = angle(posRightElbow, posRightShoulder);
+  (vrm.humanoid.getNormalizedBone('rightUpperArm') as VRMHumanBone).node.rotation.x = 3.14 / 2 * 1.3;
   const posLeftElbow = part('leftElbow');
   if (posLeftShoulder && posLeftElbow) (vrm.humanoid.getNormalizedBone('leftUpperArm') as VRMHumanBone).node.rotation.y = angle(posLeftShoulder, posLeftElbow);
+  (vrm.humanoid.getNormalizedBone('leftUpperArm') as VRMHumanBone).node.rotation.x = 3.14 / 2 * 1.3;
 
   // elbows
   posRightWrist = part('rightWrist');
-  (vrm.humanoid.getNormalizedBone('rightLowerArm') as VRMHumanBone).node.rotation.y = (posRightWrist && posRightElbow && posRightShoulder) ? angle(posRightWrist, posRightElbow) - angle(posRightElbow, posRightShoulder) : 0;
+  if (posRightWrist && posRightElbow && posRightShoulder) {
+    const angleRightLowerArm = angle(posRightWrist, posRightElbow) - angle(posRightElbow, posRightShoulder);
+    if (Math.abs(angleRightLowerArm - (vrm.humanoid.getNormalizedBone('rightLowerArm') as VRMHumanBone).node.rotation.y) < 1.5) {
+      (vrm.humanoid.getNormalizedBone('rightLowerArm') as VRMHumanBone).node.rotation.y = angleRightLowerArm;
+    }
+  }
+
   posLeftWrist = part('leftWrist');
-  (vrm.humanoid.getNormalizedBone('leftLowerArm') as VRMHumanBone).node.rotation.y = (posLeftWrist && posLeftElbow) ? angle(posLeftElbow, posLeftWrist) - angle(posLeftShoulder, posLeftElbow) : 0;
+  if (posLeftWrist && posLeftElbow && posLeftShoulder) {
+    const angleLeftLowerArm = angle(posLeftElbow, posLeftWrist) - angle(posLeftShoulder, posLeftElbow);
+    if (Math.abs(angleLeftLowerArm - (vrm.humanoid.getNormalizedBone('leftLowerArm') as VRMHumanBone).node.rotation.y) < 1.5) {
+      (vrm.humanoid.getNormalizedBone('leftLowerArm') as VRMHumanBone).node.rotation.y = angleLeftLowerArm;
+    }
+  }
 
   // legs
-  const posRightHip = part('rightHip');
-  const posRightKnee = part('rightKnee');
-  (vrm.humanoid.getNormalizedBone('rightUpperLeg') as VRMHumanBone).node.rotation.z = (posRightHip && posRightKnee) ? angle(posRightHip, posRightKnee) - (Math.PI / 2) : 0;
-  const posLeftHip = part('leftHip');
-  const posLeftKnee = part('leftKnee');
-  (vrm.humanoid.getNormalizedBone('leftUpperLeg') as VRMHumanBone).node.rotation.z = (posLeftHip && posLeftKnee) ? angle(posLeftHip, posLeftKnee) - (Math.PI / 2) : 0;
+  // const posRightHip = part('rightHip');
+  // const posRightKnee = part('rightKnee');
+  // (vrm.humanoid.getNormalizedBone('rightUpperLeg') as VRMHumanBone).node.rotation.z = (posRightHip && posRightKnee) ? angle(posRightHip, posRightKnee) - (Math.PI / 2) : 0;
+  // const posLeftHip = part('leftHip');
+  // const posLeftKnee = part('leftKnee');
+  // (vrm.humanoid.getNormalizedBone('leftUpperLeg') as VRMHumanBone).node.rotation.z = (posLeftHip && posLeftKnee) ? angle(posLeftHip, posLeftKnee) - (Math.PI / 2) : 0;
 
   // knees
   /*
