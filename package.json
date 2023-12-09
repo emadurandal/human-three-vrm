@@ -34,12 +34,12 @@
     "tensorflowjs"
   ],
   "dependencies": {
-    "@pixiv/three-vrm": "^1.0.5",
-    "@types/three": "^0.146.0",
+    "@pixiv/three-vrm": "^2.0.6",
+    "@types/three": "^0.154.0",
     "@vladmandic/build": "^0.7.14",
     "@vladmandic/human": "^3.0.1",
     "@vladmandic/pilogger": "^0.4.6",
-    "three": "0.146.0"
+    "three": "0.154.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.45.0",
